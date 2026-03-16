@@ -5,6 +5,7 @@ from PyQt6.QtWidgets import (QApplication, QMainWindow, QWidget, QVBoxLayout,
 from PyQt6.QtCore import Qt
 
 from rotor_stator_view import RotorStatorView
+from pcp import CharacteristicsView
 
 class MainWindow(QMainWindow):
 
@@ -97,8 +98,7 @@ class MainWindow(QMainWindow):
 
         # Rotor/ Stator-Zeichnung
         self.rotor_view = RotorStatorView()
-        self.rotor_view.setMinimumSize(0, 0)
-        self.rotor_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
+        self.rotor_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
         main_layout.addLayout(input_layout)
         main_layout.addWidget(self.rotor_view)
@@ -107,11 +107,15 @@ class MainWindow(QMainWindow):
 
     def _build_plot_tab(self):
         # Kennlinien-Tab
-        layout = QVBoxLayout()
+        layout = QHBoxLayout()
 
-        layout.addWidget(QPushButton('Hier sind später tolle Kennlinien'))
+        self.characteristics_view = CharacteristicsView()
+        self.characteristics_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
+        
+        layout.addWidget(self.characteristics_view)
+
         self.plot_tab.setLayout(layout)
-    
+
     def update_rotor_view(self):
         # Update Rotor-Stator-Plot
         try:
@@ -125,13 +129,16 @@ class MainWindow(QMainWindow):
 
     def run_simulation(self):
         # Simulation starten
-        print('Eingegebene Werte:')
-        print('Rotordurchmesser:', self.input_rotor_diameter.text())
-        print('Exzentrizität:', self.input_eccentricity.text())
-        print('Steigung:', self.input_rotor_pitch.text())
-        print('Stufen:', self.input_stages.text())
-        print('Viskosität:', self.input_viscosity.text())
-        print('Dichte:', self.input_density.text())
+        try:
+            d = float(self.input_rotor_diameter.text())
+            e = float(self.input_eccentricity.text())
+            h = float(self.input_rotor_pitch.text())
+            S = int(self.input_stages.currentText())
+            v = float(self.input_viscosity.text())
+            r = float(self.input_density.text())
+            self.characteristics_view.set_parameters(d, e, h, S, v, r)
+        except ValueError:
+            pass
 
         # Wechsel zum Plot-Tab
         self.tabs.setCurrentWidget(self.plot_tab)
