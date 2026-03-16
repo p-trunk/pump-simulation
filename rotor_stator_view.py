@@ -1,6 +1,7 @@
 import numpy as np
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
+from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 class RotorStatorView(QWidget):
@@ -11,9 +12,11 @@ class RotorStatorView(QWidget):
 
         self.fig = Figure(figsize=(4, 3))
         self.canvas = FigureCanvas(self.fig)
+        self.toolbar = NavigationToolbar(self.canvas, self)
 
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
+        layout.addWidget(self.toolbar)
         self.setLayout(layout)
 
         # Defaultparameter
@@ -22,7 +25,7 @@ class RotorStatorView(QWidget):
         self.pitch = 500
         self.stages = 1
 
-        self._draw_geometry()
+        self.calculate_geometry()
 
     def set_parameters(self, rotor_diameter, eccentricity, rotor_pitch, stages):
         # Parameter updaten
@@ -31,7 +34,7 @@ class RotorStatorView(QWidget):
         self.pitch = rotor_pitch
         self.stages = stages
 
-        self._draw_geometry()
+        self.calculate_geometry()
 
     def stator_polar(self, R, e):
         # Stator-Kontur 2D
@@ -60,11 +63,8 @@ class RotorStatorView(QWidget):
         
         return Xs, Ys
 
-    def _draw_geometry(self):
-        # Geometrien zeichnen
-        self.fig.clear()
-        ax = self.fig.add_subplot(111, projection='3d')
-
+    def calculate_geometry(self):
+        # Geometrien berechnen
         R = self.rotor_diameter / 2
         e = self.eccentricity
         pitch = self.pitch
@@ -88,8 +88,6 @@ class RotorStatorView(QWidget):
         Yr = y_c + R * np.sin(TH)
         Zr = Zr
 
-        ax.plot_surface(Zr, Xr, Yr, color='tab:orange', alpha=.9, linewidth=0)
-
         # Stator
         x_s_2d, y_s_2d = self.stator_polar(R, e)
 
@@ -102,12 +100,18 @@ class RotorStatorView(QWidget):
         Ys = x_s * np.sin(phi_s) + y_s * np.cos(phi_s)
         Zs = np.repeat(z.reshape(-1, 1), x_s.shape[1], axis=1)
 
-        ax.plot_surface(Zs, Xs, Ys, color='tab:blue', alpha=.5, linewidth=0)
+        self.plot_geometry(Xr, Yr, Zr, Xs, Ys, Zs)
 
-        # Plot-Einstellungen
+    def plot_geometry(self, Xr, Yr, Zr, Xs, Ys, Zs):
+
+        self.fig.clear()
+        ax = self.fig.add_subplot(111, projection='3d')
+        
+        ax.plot_surface(Zr, Xr, Yr, color='tab:orange', alpha = .9)
+        ax.plot_surface(Zs, Xs, Ys, color='tab:blue', alpha = .5)
+
+        ax.legend(['Rotor', 'Stator'], loc='center', bbox_to_anchor=(.1, .9))
         ax.set_aspect('equal')
         ax.view_init(elev=20, azim=225)
 
         self.canvas.draw()
-
-    
