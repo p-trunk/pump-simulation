@@ -1,5 +1,4 @@
-# Virtuelle Umgebung ignorieren
 .venv/
+.vscode/
 
-# Python Cache ignorieren
 __pycache__/
