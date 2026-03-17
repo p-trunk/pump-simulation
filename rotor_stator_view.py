@@ -9,7 +9,7 @@ class RotorStatorView(QWidget):
 
         super().__init__(parent)
 
-        self.fig = Figure(figsize=(4, 3))
+        self.fig = Figure(figsize=(4, 4))
         self.canvas = FigureCanvas(self.fig)
 
         layout = QVBoxLayout()
@@ -19,7 +19,7 @@ class RotorStatorView(QWidget):
         # Defaultparameter
         self.rotor_diameter = 100
         self.eccentricity = 20
-        self.pitch = 500
+        self.pitch = 250
         self.stages = 1
 
         self.calculate_geometry()
@@ -65,7 +65,7 @@ class RotorStatorView(QWidget):
         R = self.rotor_diameter / 2
         e = self.eccentricity
         pitch = self.pitch
-        L = (self.stages + .2) * pitch
+        L = 2 * (self.stages + .2) * pitch
 
         n_z = 150
         z = np.linspace(0.0, L, n_z)
@@ -97,6 +97,8 @@ class RotorStatorView(QWidget):
         Ys = x_s * np.sin(phi_s) + y_s * np.cos(phi_s)
         Zs = np.repeat(z.reshape(-1, 1), x_s.shape[1], axis=1)
 
+        self.V_chamber = 8 * self.eccentricity * self.rotor_diameter * self.pitch * 1e-6
+
         self.plot_geometry(Xr, Yr, Zr, Xs, Ys, Zs)
 
     def plot_geometry(self, Xr, Yr, Zr, Xs, Ys, Zs):
@@ -108,6 +110,10 @@ class RotorStatorView(QWidget):
         ax.plot_surface(Zs, Xs, Ys, color='tab:blue', alpha = .5)
 
         ax.legend(['Rotor', 'Stator'], loc='center', bbox_to_anchor=(.1, .9))
+        ax.text2D(.5, 0, f'Kammervolumen: {self.V_chamber: .2f} l', transform=ax.transAxes,
+                  bbox=dict(boxstyle='round,pad=0.3', facecolor='white', alpha=0.7, edgecolor='gray'),
+                  ha='center', va='top')
+
         ax.set_aspect('equal')
         ax.view_init(elev=20, azim=225)
 
