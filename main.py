@@ -58,7 +58,7 @@ class MainWindow(QMainWindow):
         self.input_rotor_pitch.editingFinished.connect(self.update_rotor_view)
         self.input_stages.currentTextChanged.connect(self.update_rotor_view)
 
-        pump_group.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        pump_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         pump_group.setLayout(pump_form)
         input_layout.addWidget(pump_group)
 
@@ -78,7 +78,7 @@ class MainWindow(QMainWindow):
         self.input_viscosity.editingFinished.connect(self.run_simulation)
         self.input_density.editingFinished.connect(self.run_simulation)
 
-        fluid_group.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
+        fluid_group.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Fixed)
         fluid_group.setLayout(fluid_form)
         input_layout.addWidget(fluid_group)
 
@@ -86,6 +86,7 @@ class MainWindow(QMainWindow):
         self.rotor_view = RotorStatorView()
         self.rotor_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
+        upper_layout.addSpacing(16)
         upper_layout.addLayout(input_layout)
         upper_layout.addWidget(self.rotor_view)
 
