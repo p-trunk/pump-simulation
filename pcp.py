@@ -9,9 +9,9 @@ class CharacteristicsView(QWidget):
 
         super().__init__(parent)
 
-        self.fig1 = Figure(figsize=(4, 3))
+        self.fig1 = Figure(figsize=(4, 4))
         self.canvas1 = FigureCanvas(self.fig1)
-        self.fig2 = Figure(figsize=(4, 3))
+        self.fig2 = Figure(figsize=(4, 4))
         self.canvas2 = FigureCanvas(self.fig2)
 
         layout = QHBoxLayout()
@@ -43,8 +43,8 @@ class CharacteristicsView(QWidget):
     
     def calculate_characteristics(self):
         # meshgrid
-        dp = np.linspace(0, self.stages * 6, 150)                                               # in bar
-        n = np.linspace(0, 250, 150)                                                            # in 1/min
+        dp = np.linspace(0, self.stages * 6, 50)                                                # in bar
+        n = np.linspace(0, 250, 50)                                                             # in 1/min
 
         DP, N = np.meshgrid(dp, n)
 
