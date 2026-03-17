@@ -45,7 +45,7 @@ class MainWindow(QMainWindow):
 
         self.input_rotor_diameter.setText('100')
         self.input_eccentricity.setText('20')
-        self.input_rotor_pitch.setText('500')
+        self.input_rotor_pitch.setText('250')
         self.input_stages.setCurrentText('1')
 
         pump_form.addRow('Rotordurchmesser in mm:', self.input_rotor_diameter)
@@ -53,16 +53,14 @@ class MainWindow(QMainWindow):
         pump_form.addRow('Rotorsteigung in mm:', self.input_rotor_pitch)
         pump_form.addRow('Anzahl der Stufen:', self.input_stages)
 
+        self.input_rotor_diameter.editingFinished.connect(self.update_rotor_view)
+        self.input_eccentricity.editingFinished.connect(self.update_rotor_view)
+        self.input_rotor_pitch.editingFinished.connect(self.update_rotor_view)
+        self.input_stages.currentTextChanged.connect(self.update_rotor_view)
+
         pump_group.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
         pump_group.setLayout(pump_form)
         input_layout.addWidget(pump_group)
-
-        # Button für Rotor-Update
-        self.button_rotor_update = QPushButton('Rotor und Stator updaten')
-        self.button_rotor_update.clicked.connect(self.update_rotor_view)
-
-        input_layout.addSpacing(8)
-        input_layout.addWidget(self.button_rotor_update, alignment=Qt.AlignmentFlag.AlignCenter)
 
         # Fluid-Eingaben
         fluid_group = QGroupBox('Fluideigenschaften')
@@ -77,18 +75,12 @@ class MainWindow(QMainWindow):
         fluid_form.addRow('Viskosität in mPa s:', self.input_viscosity)
         fluid_form.addRow('Dichte in kg/m³:', self.input_density)
 
+        self.input_viscosity.editingFinished.connect(self.run_simulation)
+        self.input_density.editingFinished.connect(self.run_simulation)
+
         fluid_group.setSizePolicy(QSizePolicy.Policy.Maximum, QSizePolicy.Policy.Fixed)
-        input_layout.addSpacing(8)
         fluid_group.setLayout(fluid_form)
         input_layout.addWidget(fluid_group)
-
-        # Button zum Berechnen
-        self.button_calculate = QPushButton('Simulation starten')
-        self.button_calculate.clicked.connect(self.run_simulation)
-
-        input_layout.addSpacing(8)
-        input_layout.addWidget(self.button_calculate, alignment=Qt.AlignmentFlag.AlignCenter)
-        input_layout.addStretch(1)
 
         # Rotor/ Stator-Zeichnung
         self.rotor_view = RotorStatorView()
@@ -115,6 +107,8 @@ class MainWindow(QMainWindow):
             self.rotor_view.set_parameters(d, e, h, S)
         except ValueError:
             pass
+
+        self.run_simulation()
 
     def run_simulation(self):
         # Simulation starten
