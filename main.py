@@ -14,30 +14,24 @@ class MainWindow(QMainWindow):
         super().__init__()
 
         self.setWindowTitle('PCP Simulation')
-        self.setMinimumSize(700, 400)
+        self.setMinimumSize(700, 700)
 
-        # Tabs für Eingaben und Plots
-        self.tabs = QTabWidget()
-        self.setCentralWidget(self.tabs)
+        self.main_widget = QWidget()
+        self.setCentralWidget(self.main_widget)
 
-        # Eingabe-Tab
-        self.input_tab = QWidget()
-        self.input_tab.setStyleSheet('QLabel { min-width: 180px; max-width: 180px }'
-                                     'QLineEdit { min-width: 100px; max-width: 100px }'
-                                     'QComboBox { min-width: 100px; max-width: 100px }')
-        self.tabs.addTab(self.input_tab, 'Eingaben')
+        self.setStyleSheet('QLabel { min-width: 180px; max-width: 180px }'
+                           'QLineEdit { min-width: 100px; max-width: 100px }'
+                           'QComboBox { min-width: 100px; max-width: 100px }')
 
-        # Kennlinien-Tab
-        self.plot_tab = QWidget()
-        self.tabs.addTab(self.plot_tab, 'Kennlinien')
+        self.main_layout = QVBoxLayout()
+        self.main_widget.setLayout(self.main_layout)
 
-        self._build_input_tab()
-        self._build_plot_tab()
+        self._build_main_layout()
 
-    def _build_input_tab(self):
-        # Eingabe-Tab
+    def _build_main_layout(self):
+        
         input_layout = QVBoxLayout()
-        main_layout = QHBoxLayout()
+        upper_layout = QHBoxLayout()
 
         # Geometrie-Eingaben
         pump_group = QGroupBox('Pumpenparameter')
@@ -100,21 +94,16 @@ class MainWindow(QMainWindow):
         self.rotor_view = RotorStatorView()
         self.rotor_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
-        main_layout.addLayout(input_layout)
-        main_layout.addWidget(self.rotor_view)
+        upper_layout.addLayout(input_layout)
+        upper_layout.addWidget(self.rotor_view)
 
-        self.input_tab.setLayout(main_layout)
+        self.main_layout.addLayout(upper_layout)
 
-    def _build_plot_tab(self):
-        # Kennlinien-Tab
-        layout = QHBoxLayout()
-
+        # Kennlinien-Plots
         self.characteristics_view = CharacteristicsView()
         self.characteristics_view.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
         
-        layout.addWidget(self.characteristics_view)
-
-        self.plot_tab.setLayout(layout)
+        self.main_layout.addWidget(self.characteristics_view)
 
     def update_rotor_view(self):
         # Update Rotor-Stator-Plot
@@ -139,9 +128,6 @@ class MainWindow(QMainWindow):
             self.characteristics_view.set_parameters(d, e, h, S, v, r)
         except ValueError:
             pass
-
-        # Wechsel zum Plot-Tab
-        self.tabs.setCurrentWidget(self.plot_tab)
 
 # Main
 if __name__ == '__main__':
