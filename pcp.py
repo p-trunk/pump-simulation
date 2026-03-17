@@ -22,7 +22,7 @@ class CharacteristicsView(QWidget):
         # Defaultparameter
         self.rotor_diameter = 100
         self.eccentricity = 20
-        self.pitch = 500
+        self.pitch = 250
         self.stages = 1
 
         self.viscosity = 1
