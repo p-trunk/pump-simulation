@@ -1,7 +1,6 @@
 import numpy as np
 from PyQt6.QtWidgets import QWidget, QVBoxLayout
 from matplotlib.backends.backend_qtagg import FigureCanvasQTAgg as FigureCanvas
-from matplotlib.backends.backend_qt5 import NavigationToolbar2QT as NavigationToolbar
 from matplotlib.figure import Figure
 
 class RotorStatorView(QWidget):
@@ -12,11 +11,9 @@ class RotorStatorView(QWidget):
 
         self.fig = Figure(figsize=(4, 3))
         self.canvas = FigureCanvas(self.fig)
-        self.toolbar = NavigationToolbar(self.canvas, self)
 
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
-        layout.addWidget(self.toolbar)
         self.setLayout(layout)
 
         # Defaultparameter
